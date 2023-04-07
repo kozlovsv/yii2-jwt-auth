@@ -14,11 +14,11 @@ use yii\web\Request;
 use yii\web\UnauthorizedHttpException;
 
 /**
- * JwtBearerAuth is an action filter that supports the authentication method based on HTTP Bearer JWT token.
+ * JwtHttpBearerAuth is an action filter that supports the authentication method based on HTTP Bearer JWT token.
  * @package kozlovsv\jwtauth
  * @author Kozlov Sergey <kozlovsv78@gmail.com>
  */
-class JwtBearerAuth extends AuthMethod
+class JwtHttpBearerAuth extends AuthMethod
 {
     /**
      * @var string the HTTP header name

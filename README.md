@@ -41,12 +41,12 @@ Add `jwt` component to your configuration file,
 ```php
 'components' => [
     'jwt' => [
-        'class' => \kozlovsv\jwt\Jwt::class,
+        'class' => \kozlovsv\jwtauth\Jwt::class,
         'secretKey' => 'Your secret key',
-        'alg' => 'HS256'; //signing algorithm to use
+        'alg' => 'HS256', //signing algorithm to use
         'durationAccess' => 1800, //default 30 min
         'durationRefresh' => 1296000, //default 15 days
-        'leeway' => 0; //clock skew
+        'leeway' => 0, //clock skew
     ],
 ],
 ```
@@ -66,7 +66,7 @@ class ExampleController extends \yii\rest\Controller
     {
         $behaviors = parent::behaviors();
         $behaviors['authenticator'] = [
-            'class' => \kozlovsv\jwt\JwtHttpBearerAuth::class,
+            'class' => \kozlovsv\jwtauth\JwtHttpBearerAuth::class,
         ];
 
         return $behaviors;
