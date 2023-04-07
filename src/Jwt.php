@@ -6,9 +6,10 @@ use yii\base\Component;
 use yii\base\InvalidConfigException;
 use yii\di\Instance;
 
-
 /**
  * JSON Web Token Component
+ * @package kozlovsv\jwtauth
+ * @author Kozlov Sergey <kozlovsv78@gmail.com>
  */
 class Jwt extends Component
 {
@@ -46,7 +47,7 @@ class Jwt extends Component
     public $leeway = 0;
 
     /**
-     * @var ITokenStorageIntegface|string|array the component provide storage token.
+     * @var ITokenStorageInterface|string|array the component provide storage token.
      */
     public $tokenStorage;
 

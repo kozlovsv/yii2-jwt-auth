@@ -9,30 +9,33 @@ use Firebase\JWT\ExpiredException;
 use Firebase\JWT\SignatureInvalidException;
 use InvalidArgumentException;
 use yii\di\Instance;
-use yii\filters\auth\HttpBearerAuth;
+use yii\filters\auth\AuthMethod;
 use yii\web\Request;
 use yii\web\UnauthorizedHttpException;
 
-class JwtBearerAuth extends HttpBearerAuth
+/**
+ * JwtBearerAuth is an action filter that supports the authentication method based on HTTP Bearer JWT token.
+ * @package kozlovsv\jwtauth
+ * @author Kozlov Sergey <kozlovsv78@gmail.com>
+ */
+class JwtBearerAuth extends AuthMethod
 {
     /**
-     * {@inheritdoc}
+     * @var string the HTTP header name
      */
     public $header = 'Authorization';
     /**
-     * {@inheritdoc}
+     * @var string a pattern to use to extract the HTTP authentication value
      */
     public $pattern = '/^Bearer\s+(.*?)$/';
     /**
      * @var string the HTTP authentication realm
      */
     public $realm = 'api';
-
     /**
-     * @var string the HTTP authentication realm
+     * @var string error message, sending in header when token is invalid
      */
     protected $errorDescription = 'The access token invalid or expired';
-
     /**
      * @var Jwt|string|array the [[Jwt]] object or the application component ID of the [[Jwt]].
      */
@@ -105,10 +108,8 @@ class JwtBearerAuth extends HttpBearerAuth
     }
 
     /**
-     * Get header
-     *
+     * Get raw token from header
      * @param Request $request
-     *
      * @return null|string
      */
     protected function extractJwtAuthTokenFromHeader(Request $request): ?string

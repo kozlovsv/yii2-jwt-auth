@@ -4,10 +4,11 @@ namespace kozlovsv\jwtauth;
 
 use Firebase\JWT\Key;
 
-
-
 /**
- *  JwtToken Container
+ * JWT Token Container
+ * Class JwtToken
+ * @package kozlovsv\jwtauth
+ * @author Kozlov Sergey <kozlovsv78@gmail.com>
  */
 class JwtToken
 {

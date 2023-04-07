@@ -9,8 +9,10 @@ use yii\di\Instance;
 
 /**
  * Service provides token storage in application cache
+ * @package kozlovsv\jwtauth
+ * @author Kozlov Sergey <kozlovsv78@gmail.com>
  */
-class TokenStorageCache extends Component implements ITokenStorageIntegface
+class TokenStorageCache extends Component implements ITokenStorageInterface
 {
     const ACCESS_TOKEN_TYPE = 'a';
     const REFRESH_TOKEN_TYPE = 'a';

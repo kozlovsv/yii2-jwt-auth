@@ -2,7 +2,12 @@
 
 namespace kozlovsv\jwtauth;
 
-interface ITokenStorageIntegface
+/**
+ * Interface to work with token storage
+ * @package kozlovsv\jwtauth
+ * @author Kozlov Sergey <kozlovsv78@gmail.com>
+ */
+interface ITokenStorageInterface
 {
     /**
      * Check exists Access token in storage
@@ -16,7 +21,7 @@ interface ITokenStorageIntegface
      * Check exists Refresh token in storage
      * @param int $userId User Id
      * @param string $tokenId Unique token ID, for example hash MD5 or SHA-1, store in jti claim JWT tocken
-      * @return bool True if token exists
+     * @return bool True if token exists
      */
     public function existsRefreshToken(int $userId, string $tokenId): bool;
 
