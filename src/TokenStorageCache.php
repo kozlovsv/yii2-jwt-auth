@@ -60,9 +60,6 @@ class TokenStorageCache extends Component implements ITokenStorageInterface
     {
         parent::init();
         $this->cache = Instance::ensure($this->cache);
-        if (!$this->cache) {
-            throw new InvalidConfigException('The Cache component is required.');
-        }
     }
 
     /**

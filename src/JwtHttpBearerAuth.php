@@ -58,7 +58,7 @@ class JwtHttpBearerAuth extends AuthMethod
     public function authenticate($user, $request, $response)
     {
         $tokenRaw = $this->extractJwtAuthTokenFromHeader($request);
-        if ($tokenRaw !== null) {
+        if ($tokenRaw) {
             $token = $this->getJwtAuthToken($response, $tokenRaw);
             $identity = $user->loginByAccessToken($token->getUserID(), get_class($this));
             if ($identity === null) {
@@ -101,7 +101,7 @@ class JwtHttpBearerAuth extends AuthMethod
         } catch (ExpiredException $e) {
             $this->errorDescription = 'Token expired';
         } catch (Exception $e) {
-            $this->errorDescription = 'Unknown error';
+            $this->errorDescription = 'Bad token format';
         }
         $this->challenge($response);
         $this->handleFailure($response);
