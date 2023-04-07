@@ -1,0 +1,11 @@
+version: '3'
+services:
+  php:
+    image: yiisoftware/yii2-php:8.0-fpm
+    container_name: ${PROJECT_NAME}-php
+    restart: always
+    environment:
+      - GITHUB_API_TOKEN
+    volumes:
+      - ./:/app
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated

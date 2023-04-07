@@ -1,0 +1,49 @@
+{
+  "name": "kozlovsv/yii2-jwt-auth",
+  "description": "Extension for JWT auth for Yii2",
+  "keywords": [
+    "yii2",
+    "extension",
+    "jwt",
+    "auth",
+    "api",
+    "rest"
+  ],
+  "type": "yii2-extension",
+  "minimum-stability": "stable",
+  "homepage": "https://github.com/kozlovsv/yii2-jwt-auth",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Kozlov Sergey",
+      "email": "kozlovsv78@gmail.com",
+      "homepage": "https://atonex.ru/"
+    }
+  ],
+  "require": {
+    "php": ">=7.2",
+    "yiisoft/yii2": "~2.0.14",
+    "firebase/php-jwt": "~6.0",
+    "ext-json": "*"
+  },
+  "config": {
+    "process-timeout": 1800,
+    "fxp-asset": {
+      "enabled": false
+    },
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true
+    }
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://asset-packagist.org"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "kozlovsv\\jwtauth\\": "src/"
+    }
+  }
+}

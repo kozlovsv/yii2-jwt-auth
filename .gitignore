@@ -1,0 +1,12 @@
+# General
+vendor
+
+# Cache directories
+Thumbs.db
+*.DS_Store
+*.empty
+
+# PhpStorm project files
+.idea
+/.env
+*.cmd
