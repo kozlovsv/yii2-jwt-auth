@@ -112,7 +112,7 @@ class JwtToken
     */
     public static function decode(string $jwtRawToken, string $key, string $alg): JwtToken {
         $instace = new self($jwtRawToken);
-        $instace->_jwtPayload = \Firebase\JWT\JWT::decode($jwtRawToken, new Key($key, $alg));
+        $instace->_jwtPayload = (array) \Firebase\JWT\JWT::decode($jwtRawToken, new Key($key, $alg));
         return $instace;
     }
 
