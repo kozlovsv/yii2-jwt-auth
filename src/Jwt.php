@@ -49,7 +49,7 @@ class Jwt extends Component
     /**
      * @var ITokenStorageInterface|string|array the component provide storage token.
      */
-    public $tokenStorage;
+    public $tokenStorage = TokenStorageCache::class;
 
     /**
      * Additional info to payload section JWT
@@ -74,15 +74,6 @@ class Jwt extends Component
         parent::init();
         if (!$this->secretKey) {
             throw new InvalidConfigException('The "secretKey" property сan not be empty.');
-        }
-
-        if (empty($this->tokenStorage)) {
-            $this->tokenStorage = [
-                'class' => TokenStorageCache::class,
-                'durationAccess' => $this->durationAccess,
-                'durationRefresh' => $this->durationRefresh,
-                'leeway' => $this->leeway,
-            ];
         }
         $this->tokenStorage = Instance::ensure($this->tokenStorage);
         JwtToken::setLeeway($this->leeway);
