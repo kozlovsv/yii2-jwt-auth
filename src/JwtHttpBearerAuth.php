@@ -2,12 +2,7 @@
 
 namespace kozlovsv\jwtauth;
 
-use DomainException;
 use Exception;
-use Firebase\JWT\BeforeValidException;
-use Firebase\JWT\ExpiredException;
-use Firebase\JWT\SignatureInvalidException;
-use InvalidArgumentException;
 use yii\di\Instance;
 use yii\filters\auth\AuthMethod;
 use yii\web\Request;
@@ -33,10 +28,6 @@ class JwtHttpBearerAuth extends AuthMethod
      */
     public $realm = 'api';
     /**
-     * @var string error message, sending in header when token is invalid
-     */
-    protected $errorDescription = 'The access token invalid or expired';
-    /**
      * @var Jwt|string|array the [[Jwt]] object or the application component ID of the [[Jwt]].
      */
     public $jwt = 'jwt';
@@ -46,10 +37,7 @@ class JwtHttpBearerAuth extends AuthMethod
      */
     public function challenge($response)
     {
-        $response->getHeaders()->set(
-            'WWW-Authenticate',
-            "Bearer realm=\"$this->realm\", error=\"invalid_token\", error_description=\"$this->errorDescription\""
-        );
+        $response->getHeaders()->set('WWW-Authenticate', "Bearer realm=\"$this->realm\"");
     }
 
     /**
@@ -66,10 +54,8 @@ class JwtHttpBearerAuth extends AuthMethod
                 $this->handleFailure($response);
             }
             return $identity;
-        } else {
-            $this->errorDescription = 'Token is empty';
-            return null;
         }
+        return null;
     }
 
     /**
@@ -94,17 +80,10 @@ class JwtHttpBearerAuth extends AuthMethod
     {
         try {
             return $this->jwt->parseToken($tokenRaw);
-        } catch (DomainException|InvalidArgumentException|SignatureInvalidException $e) {
-            $this->errorDescription = 'Invalid token format';
-        } catch (BeforeValidException $e) {
-            $this->errorDescription = 'Token has not expired';
-        } catch (ExpiredException $e) {
-            $this->errorDescription = 'Token expired';
         } catch (Exception $e) {
-            $this->errorDescription = 'Bad token format';
+            $this->challenge($response);
+            $this->handleFailure($response);
         }
-        $this->challenge($response);
-        $this->handleFailure($response);
     }
 
     /**

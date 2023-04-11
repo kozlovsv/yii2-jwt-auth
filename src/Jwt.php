@@ -51,6 +51,18 @@ class Jwt extends Component
      */
     public $tokenStorage;
 
+    /**
+     * Additional info to payload section JWT
+     * Example :
+     *  [
+     *      'iss' => 'https://api.example.com',
+     *      'aud' => 'https://frontend.example.com',
+     *      'sub' => 'subject',
+     *  ]
+     * @var array
+     */
+    public $additionalClaims = [];
+
 
     /**
      * @inheritDoc
@@ -73,37 +85,83 @@ class Jwt extends Component
             ];
         }
         $this->tokenStorage = Instance::ensure($this->tokenStorage);
+        JwtToken::setLeeway($this->leeway);
     }
 
     /**
      * Parses the JWT and returns a token class
      * @param string $tokenRaw JWT token string
      * @param bool $verifyWhiteList true if need verify token in white list
-     * @param bool $isAccess true if Access token, false if Refresh token
      * @return JwtToken|null
      */
-    public function parseToken(string $tokenRaw, bool $verifyWhiteList = true, bool $isAccess = true)
+    public function parseToken(string $tokenRaw, bool $verifyWhiteList = true)
     {
         $token = JwtToken::decode($tokenRaw, $this->secretKey, $this->alg);
 
-        if ($verifyWhiteList && !$this->verifyWhiteList($token, $isAccess)) {
+        if ($verifyWhiteList && !$this->verifyWhiteList($token)) {
             return null;
         }
         return $token;
+    }
+
+    /**
+     * @param bool $isAccess
+     * @param bool $addLeeway
+     * @return int
+     */
+    protected function getDuration(bool $isAccess, bool $addLeeway = false):int {
+          $duration = $isAccess ? $this->durationAccess : $this->durationRefresh;
+          if ($addLeeway) $duration += $this->leeway;
+          return $duration;
+    }
+
+    /**
+     * Generate JWT token
+     * @param int $userId
+     * @param bool $isAccess true if Access token, false if Refresh token
+     * @return array  Return pair token and token id [(string) $tokenString, (string) $tokenId]
+     */
+    public function generateToken(int $userId, bool $isAccess = true): array
+    {
+        $duration = $this->getDuration($isAccess);
+        $token = new JwtToken();
+        $token
+            ->addClaims($this->additionalClaims)
+            ->setUserID($userId)
+            ->setExpiredAt($duration)
+            ->setRandomTokenId($userId);
+        $tokenRaw = $token->encode($this->secretKey, $this->alg);
+        $tokenId = $token->getTokenId();
+        return [$tokenRaw, $tokenId];
+    }
+
+    /**
+     * Generate JWT token and save to storage
+     * @param int $userId
+     * @param bool $isAccess true if Access token, false if Refresh token
+     * @return string
+     */
+    public function generateAndSaveToken(int $userId, bool $isAccess = true): string
+    {
+        list($tokenString, $tokenId) = $this->generateToken($userId, $isAccess);
+        if ($tokenString) {
+            $duration = $this->getDuration($isAccess, true);
+            $this->tokenStorage->set($userId, $tokenId, $duration);
+        }
+        return $tokenString;
     }
 
 
     /**
      * Validate token
      * @param JwtToken $token token object
-     * @param bool $isAccess true if Access token, false if Refresh token
      * @return bool
      */
-    public function verifyWhiteList(JwtToken $token, bool $isAccess = true)
+    public function verifyWhiteList(JwtToken $token)
     {
         $tokenId = $token->getTokenId();
         $userId = $token->getUserID();
         if (!$tokenId || !$userId) return false;
-        return $isAccess ? $this->tokenStorage->existsAccessToken($userId, $tokenId) : $this->tokenStorage->existsRefreshToken($userId, $tokenId);
+        return $this->tokenStorage->exists($userId, $tokenId);
     }
 }
