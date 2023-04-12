@@ -100,10 +100,11 @@ class Jwt extends Component
      * @param bool $addLeeway
      * @return int
      */
-    protected function getDuration(bool $isAccess, bool $addLeeway = false):int {
-          $duration = $isAccess ? $this->durationAccess : $this->durationRefresh;
-          if ($addLeeway) $duration += $this->leeway;
-          return $duration;
+    protected function getDuration(bool $isAccess, bool $addLeeway = false): int
+    {
+        $duration = $isAccess ? $this->durationAccess : $this->durationRefresh;
+        if ($addLeeway) $duration += $this->leeway;
+        return $duration;
     }
 
     /**
@@ -154,5 +155,31 @@ class Jwt extends Component
         $userId = $token->getUserID();
         if (!$tokenId || !$userId) return false;
         return $this->tokenStorage->exists($userId, $tokenId);
+    }
+
+    /**
+     * Renew tokens. Delete old refresh token from storage, and generate new pair refresh and access tokens
+     * @param JwtToken $refreshToken token object
+     * @return array token pair [(string) $refreshToken, (string) $accessToken]
+     */
+    public function renewTokens(JwtToken $refreshToken): array
+    {
+        $userId = $refreshToken->getUserID();
+        //Delete old refresh token
+        $this->tokenStorage->delete(
+            $userId,
+            $refreshToken->getTokenId());
+        return $this->generateAndSavePairTokens($userId);
+
+    }
+
+    /**
+     * Generate new pair refresh and access tokens for user id, and save to storage
+     * @param int $userId
+     * @return array token pair [(string) $refreshToken, (string) $accessToken]
+     */
+    public function generateAndSavePairTokens(int $userId): array
+    {
+        return [$this->generateAndSaveToken($userId, false), $this->generateAndSaveToken($userId)];
     }
 }
