@@ -2,7 +2,7 @@
 
 namespace kozlovsv\jwtauth;
 
-use UnexpectedValueException;
+use Exception;
 use yii\di\Instance;
 use yii\filters\auth\AuthMethod;
 use yii\web\Request;
@@ -71,7 +71,7 @@ class JwtHttpBearerAuth extends AuthMethod
     {
         try {
             return $this->jwt->parseToken($tokenRaw, true);
-        } catch (UnexpectedValueException $e) {
+        } catch (Exception $e) {
             return null;
         }
     }
