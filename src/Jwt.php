@@ -80,7 +80,7 @@ class Jwt extends Component
         if (!$this->accessTokenSecret || !$this->refreshTokenSecret) {
             throw new InvalidConfigException('The "accessTokenSecret" and "refreshTokenSecret" property must be set, and сan not be empty.');
         }
-        if ($this->accessTokenSecret == !$this->refreshTokenSecret) {
+        if ($this->accessTokenSecret == $this->refreshTokenSecret) {
             throw new InvalidConfigException('The "accessTokenSecret" property cannot be equal to "refreshTokenSecret" property.');
         }
         $this->tokenStorage = Instance::ensure($this->tokenStorage);
