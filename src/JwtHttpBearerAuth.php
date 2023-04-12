@@ -2,11 +2,10 @@
 
 namespace kozlovsv\jwtauth;
 
-use Exception;
+use UnexpectedValueException;
 use yii\di\Instance;
 use yii\filters\auth\AuthMethod;
 use yii\web\Request;
-use yii\web\UnauthorizedHttpException;
 
 /**
  * JwtHttpBearerAuth is an action filter that supports the authentication method based on HTTP Bearer JWT token.
@@ -46,16 +45,10 @@ class JwtHttpBearerAuth extends AuthMethod
     public function authenticate($user, $request, $response)
     {
         $tokenRaw = $this->extractJwtAuthTokenFromHeader($request);
-        if ($tokenRaw) {
-            $token = $this->getJwtAuthToken($response, $tokenRaw);
-            $identity = $user->loginByAccessToken($token->getUserID(), get_class($this));
-            if ($identity === null) {
-                $this->challenge($response);
-                $this->handleFailure($response);
-            }
-            return $identity;
-        }
-        return null;
+        if (!$tokenRaw) return null;
+        $token = $this->getJwtAuthToken($tokenRaw);
+        if (!$token) return null;
+        return $user->loginByAccessToken($token->getUserID(), get_class($this));
     }
 
     /**
@@ -70,19 +63,16 @@ class JwtHttpBearerAuth extends AuthMethod
     /**
      * Create jwt auth token model from header
      *
-     * @param $response
      * @param string $tokenRaw
      *
      * @return JwtToken|null
-     * @throws UnauthorizedHttpException
      */
-    protected function getJwtAuthToken($response, string $tokenRaw): ?JwtToken
+    protected function getJwtAuthToken(string $tokenRaw): ?JwtToken
     {
         try {
             return $this->jwt->parseToken($tokenRaw, true);
-        } catch (Exception $e) {
-            $this->challenge($response);
-            $this->handleFailure($response);
+        } catch (UnexpectedValueException $e) {
+            return null;
         }
     }
 
