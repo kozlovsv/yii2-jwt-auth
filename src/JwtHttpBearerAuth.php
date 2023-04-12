@@ -79,7 +79,7 @@ class JwtHttpBearerAuth extends AuthMethod
     protected function getJwtAuthToken($response, string $tokenRaw): ?JwtToken
     {
         try {
-            return $this->jwt->parseToken($tokenRaw);
+            return $this->jwt->parseToken($tokenRaw, true);
         } catch (Exception $e) {
             $this->challenge($response);
             $this->handleFailure($response);

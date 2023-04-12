@@ -48,7 +48,7 @@ class JwtToken
      */
     public function getUserID(): int
     {
-        return $this->_jwtPayload['uid'] ?? 0;
+        return $this->_jwtPayload['azp'] ?? 0;
     }
 
     /**
@@ -68,7 +68,7 @@ class JwtToken
      */
     public function setUserID(int $userId): JwtToken
     {
-        $this->_jwtPayload['uid'] = $userId;
+        $this->_jwtPayload['azp'] = $userId;
         return $this;
     }
 

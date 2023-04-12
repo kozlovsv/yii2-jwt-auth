@@ -14,9 +14,14 @@ use yii\di\Instance;
 class Jwt extends Component
 {
     /**
-     * @var string secret key for sign
+     * @var string Acсes token secret key for sign. Can`t equal to Refresh token.
      */
-    public $secretKey;
+    public $accessTokenSecret;
+
+    /**
+     * @var string Refresh token secret key for sign. Can`t equal to Access token.
+     */
+    public $refreshTokenSecret;
 
     /**
      * @var string secret key for sign
@@ -72,8 +77,11 @@ class Jwt extends Component
     public function init()
     {
         parent::init();
-        if (!$this->secretKey) {
-            throw new InvalidConfigException('The "secretKey" property сan not be empty.');
+        if (!$this->accessTokenSecret || !$this->refreshTokenSecret) {
+            throw new InvalidConfigException('The "accessTokenSecret" and "refreshTokenSecret" property must be set, and сan not be empty.');
+        }
+        if ($this->accessTokenSecret == !$this->refreshTokenSecret) {
+            throw new InvalidConfigException('The "accessTokenSecret" property cannot be equal to "refreshTokenSecret" property.');
         }
         $this->tokenStorage = Instance::ensure($this->tokenStorage);
         JwtToken::setLeeway($this->leeway);
@@ -82,12 +90,13 @@ class Jwt extends Component
     /**
      * Parses the JWT and returns a token class
      * @param string $tokenRaw JWT token string
+     * @param bool $isAccess true if Access token, false if Refresh token
      * @param bool $verifyWhiteList true if need verify token in white list
      * @return JwtToken|null
      */
-    public function parseToken(string $tokenRaw, bool $verifyWhiteList = true)
+    public function parseToken(string $tokenRaw, bool $isAccess,  bool $verifyWhiteList = true)
     {
-        $token = JwtToken::decode($tokenRaw, $this->secretKey, $this->alg);
+        $token = JwtToken::decode($tokenRaw, $this->getSecret($isAccess), $this->alg);
 
         if ($verifyWhiteList && !$this->verifyWhiteList($token)) {
             return null;
@@ -108,6 +117,15 @@ class Jwt extends Component
     }
 
     /**
+     * @param bool $isAccess
+     * @return string
+     */
+    protected function getSecret(bool $isAccess): string
+    {
+        return $isAccess ? $this->accessTokenSecret : $this->refreshTokenSecret;
+    }
+
+    /**
      * Generate JWT token
      * @param int $userId
      * @param bool $isAccess true if Access token, false if Refresh token
@@ -122,7 +140,7 @@ class Jwt extends Component
             ->setUserID($userId)
             ->setExpiredAt($duration)
             ->setRandomTokenId($userId);
-        $tokenRaw = $token->encode($this->secretKey, $this->alg);
+        $tokenRaw = $token->encode($this->getSecret($isAccess), $this->alg);
         $tokenId = $token->getTokenId();
         return [$tokenRaw, $tokenId];
     }

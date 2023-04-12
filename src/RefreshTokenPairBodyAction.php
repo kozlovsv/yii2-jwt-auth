@@ -38,6 +38,6 @@ class RefreshTokenPairBodyAction extends RefreshTokenPairBlankAction
      * @return string
      */
     protected function getRawToken():string {
-        return $this->request->getBodyParam($this->headerRefresh);
+        return $this->request->getBodyParam($this->headerRefresh, '');
     }
 }

@@ -56,7 +56,7 @@ abstract class RefreshTokenPairBlankAction extends Action
     protected function getJwtAuthToken(string $tokenRaw): ?JwtToken
     {
         try {
-            return $this->jwt->parseToken($tokenRaw);
+            return $this->jwt->parseToken($tokenRaw, false, false);
         } catch (Exception $e) {
             $this->handleFailure('Refresh token is invalid or expired');
         }
