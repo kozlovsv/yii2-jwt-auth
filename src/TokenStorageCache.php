@@ -99,4 +99,15 @@ class TokenStorageCache extends Component implements ITokenStorageInterface
         $key = $this->buildKey($userId, $tokenId);
         return $this->cache->delete($key);
     }
+
+    /**
+     * Delete all tokens for user from storage
+     * @param int $userId User Id
+     * @return bool True if token deleted
+     */
+    public function deleteAllForUser(int $userId): bool
+    {
+        //Not implemented because the standard Cache component does not have required functionality
+        return false;
+    }
 }

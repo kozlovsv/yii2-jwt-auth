@@ -32,4 +32,11 @@ interface ITokenStorageInterface
      * @return bool True if token deleted
      */
     public function delete(int $userId, string $tokenId): bool;
+
+    /**
+     * Delete all tokens for user from storage
+     * @param int $userId User Id
+     * @return bool True if token deleted
+     */
+    public function deleteAllForUser(int $userId): bool;
 }
