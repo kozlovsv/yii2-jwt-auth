@@ -82,13 +82,13 @@ Also you can use it with `CompositeAuth` reffer to a [doc](http://www.yiiframewo
 ### Basic scheme
 The authentication scheme is based on this [specification](https://datatracker.ietf.org/doc/html/rfc6749#section-1.5).
 
-1. Client send credentials. For example, login + password. In our example, this is a POST request to https://your-domain/api/login. 
+1. Client send credentials. For example, login + password. In our example, this is a POST request to https://your-domain/rest/login. 
 2. Backend validate them
 3. If credentials is valid client receive pair token: refresh and access
 4. Client store tokens for the future requests
-5. Сlient sends a request to the backend using a access token for authentication
-6. If access token is expired, backent send response with 401 HTTP статус
-7. Client send query with refresh token, for renew pair tokens. In our example, this is a POST request to https://your-domain/api/refresh-token. Post parameter name for refresh token is `refresh_token='Your refresh token'`
+5. Сlient sends a request to the backend using a access token for authentication. In our example, this is a request to https://your-domain/rest/data. In the header of the request section, you must specify the header `Authorization: Bearer YOUR_ACCESS_TOKEN`
+6. If access token is expired, backent send response with 401 HTTP status
+7. Client send query with refresh token, for renew pair tokens. In our example, this is a POST request to https://your-domain/rest/refresh-token. Post parameter name for refresh token is `refresh_token='Your refresh token'`
 8. If refresh token is invalid, go to step 1
 
 ### Step-by-step usage example
