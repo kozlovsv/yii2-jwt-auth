@@ -91,7 +91,6 @@ class TokenStorageCache extends Component implements ITokenStorageInterface
         return $this->cache->exists($key);
     }
 
-
     /**
      * Stores a value identified by a key in storage.
      * @param string $key the key identifying the value to be cached
