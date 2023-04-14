@@ -58,9 +58,26 @@ class TokenStorageCache extends Component implements ITokenStorageInterface
      * @param string $tokenId Unique token ID, for example hash MD5 or SHA-1, store in jti claim JWT tocken
      * @return string Formated cache key
      */
-    protected function buildKey(int $userId, string $tokenId): string
+    protected function buildKeyForUserToken(int $userId, string $tokenId): string
     {
         return $this->buildKeyForUser($userId) . ':' . $tokenId;
+    }
+
+    /**
+     * Build formated cache key, for example:  api:token:1425:9f3898ca702c9c9f4991c63dc7eb0e13
+     * 1425 - User ID
+     * f3898ca702c9c9f4991c63dc7eb0e13 - Tocken Id
+     *
+     * This key structure allows you to get all the tokens for a specific user by running a Redis query
+     * KEYS api:token:1425:* - all tokens for user
+     *
+     * @param int $userId User Id
+     * @param string $tokenId Unique token ID, for example hash MD5 or SHA-1, store in jti claim JWT tocken
+     * @return string Formated cache key
+     */
+    protected function buildKey(int $userId, string $tokenId): string
+    {
+        return $this->buildKeyForUserToken($userId, $tokenId);
     }
 
     /**
@@ -85,7 +102,7 @@ class TokenStorageCache extends Component implements ITokenStorageInterface
     public function set(int $userId, string $tokenId, int $duration = 0): bool
     {
         $key = $this->buildKey($userId, $tokenId);
-        return $this->cache->set($key, $key, $duration);
+        return $this->cache->set($key,  $this->buildKeyForUserToken($userId, $tokenId), $duration);
     }
 
     /**
