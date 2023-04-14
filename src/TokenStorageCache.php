@@ -2,6 +2,7 @@
 
 namespace kozlovsv\jwtauth;
 
+use Exception;
 use Yii;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
@@ -81,6 +82,39 @@ class TokenStorageCache extends Component implements ITokenStorageInterface
     }
 
     /**
+     * Check exists key in storage
+     * Low-lefel function work with storage
+     * @param string $key a key identifying the cached value.
+     * @return bool True if token exists
+     */
+    protected function _exists(string $key): bool{
+        return $this->cache->exists($key);
+    }
+
+
+    /**
+     * Stores a value identified by a key in storage.
+     * @param string $key the key identifying the value to be cached
+     * @param mixed $value the value to be stored.
+     * @param int $duration the number of seconds in which the cached value will expire. 0 means never expire.
+     * @return bool true if the value is successfully stored, false otherwise
+     * @throws Exception
+     */
+    protected function setValue(string $key, $value, int $duration): bool
+    {
+        return $this->cache->set($key, $value, $duration);
+    }
+
+    /**
+     * Deletes a value with the specified key from storage
+     * @param string $key the key of the value to be deleted
+     * @return bool if no error happens during deletion
+     */
+    protected function deleteValue(string $key): bool {
+        return $this->cache->delete($key);
+    }
+
+    /**
      * Check exists token in storage
      * @param int $userId User Id
      * @param string $tokenId Unique token ID, for example hash MD5 or SHA-1, store in jti claim JWT tocken
@@ -89,7 +123,7 @@ class TokenStorageCache extends Component implements ITokenStorageInterface
     public function exists(int $userId, string $tokenId): bool
     {
         $key = $this->buildKey($userId, $tokenId);
-        return $this->cache->exists($key);
+        return $this->_exists($key);
     }
 
     /**
@@ -98,12 +132,13 @@ class TokenStorageCache extends Component implements ITokenStorageInterface
      * @param string $tokenId Unique token ID, for example hash MD5 or SHA-1, store in jti claim JWT tocken
      * @param int $duration the number of seconds in which the cached value will expire. 0 means never expire.
      * @return bool True if token exists
+     * @throws Exception
      */
     public function set(int $userId, string $tokenId, int $duration = 0): bool
     {
         $key = $this->buildKey($userId, $tokenId);
         $value = YII_DEBUG ? $this->buildKeyForUserToken($userId, $tokenId) : 1;
-        return $this->cache->set($key, $value, $duration);
+        return $this->setValue($key, $value, $duration);
     }
 
     /**
@@ -115,7 +150,7 @@ class TokenStorageCache extends Component implements ITokenStorageInterface
     public function delete(int $userId, string $tokenId): bool
     {
         $key = $this->buildKey($userId, $tokenId);
-        return $this->cache->delete($key);
+        return $this->deleteValue($key);
     }
 
     /**
