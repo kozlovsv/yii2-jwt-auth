@@ -102,7 +102,8 @@ class TokenStorageCache extends Component implements ITokenStorageInterface
     public function set(int $userId, string $tokenId, int $duration = 0): bool
     {
         $key = $this->buildKey($userId, $tokenId);
-        return $this->cache->set($key,  $this->buildKeyForUserToken($userId, $tokenId), $duration);
+        $value = YII_DEBUG ? $this->buildKeyForUserToken($userId, $tokenId) : 1;
+        return $this->cache->set($key, $value, $duration);
     }
 
     /**
