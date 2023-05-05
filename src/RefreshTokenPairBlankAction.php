@@ -43,8 +43,9 @@ abstract class RefreshTokenPairBlankAction extends Action
         if (!$this->jwt->verifyWhiteList($refreshToken)) {
             $this->handleFailure('Refresh token no longer exists');
         }
+        $userId = $refreshToken->getUserID();
         list($newRefreshToken, $newAccessToken) = $this->jwt->renewTokens($refreshToken);
-        return $this->formatResponse($newRefreshToken, $newAccessToken);
+        return $this->formatResponse($userId, $newRefreshToken, $newAccessToken);
     }
 
     /**
@@ -78,13 +79,15 @@ abstract class RefreshTokenPairBlankAction extends Action
     protected abstract function getRawToken():string;
 
     /**
+     * @param int $userId
      * @param string $refreshToken
      * @param string $accessToken
      * @return array
      */
-    protected function formatResponse(string $refreshToken, string $accessToken)
+    protected function formatResponse(int $userId, string $refreshToken, string $accessToken)
     {
         return [
+            'user_id' => $userId,
             'access_token' =>  $accessToken,
             'refresh_token' =>  $refreshToken,
         ];
